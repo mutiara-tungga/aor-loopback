@@ -37,7 +37,7 @@ export const authClient = (loginApiUrl, noAccessPage = '/login') => {
         }
         if (type === 'AUTH_CHECK') {
             const token = storage.load('lbtoken');
-            if (token && token.accessToken) {
+            if (token && token.token) {
                 return Promise.resolve();
             } else {
                 storage.remove('lbtoken');
@@ -46,7 +46,7 @@ export const authClient = (loginApiUrl, noAccessPage = '/login') => {
         }
         if (type === 'AUTH_GET_PERMISSIONS') {
             const token = storage.load('lbtoken');
-            if (token && token.accessToken) {
+            if (token && token.token) {
                 return Promise.resolve(token.role);
             } else {
                 storage.remove('lbtoken');

@@ -12,7 +12,7 @@ export const fetchJson = (url, options = {}) => {
         requestHeaders.set('Authorization', options.user.token);
     } else {
         let token = storage.load('lbtoken');
-        token = (token && token.accessToken) || '';
+        token = (token && token.token) || '';
         if (url.indexOf('?') >= 0) {
             url = url + '&access_token=' + token;
         } else {
