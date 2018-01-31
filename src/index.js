@@ -1,4 +1,4 @@
-import {queryParameters, fetchJson} from './fetch';
+import { queryParameters, fetchJson } from './fetch';
 import {
     GET_LIST,
     GET_ONE,
@@ -35,10 +35,10 @@ export default (apiUrl, httpClient = fetchJson) => {
         const options = {};
         switch (type) {
             case GET_LIST: {
-                const {page, perPage} = params.pagination;
-                const {field, order} = params.sort;
+                const { page, perPage } = params.pagination;
+                const { field, order } = params.sort;
                 const query = {};
-                query['where'] = {...params.filter};
+                query['where'] = { ...params.filter };
                 if (field) query['order'] = [field + ' ' + order];
                 if (perPage > 0) {
                     query['limit'] = perPage;
@@ -46,7 +46,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url = `${apiUrl}/${resource}?${queryParameters({ filter: JSON.stringify(query) })}`;
                 break;
             }
             case GET_ONE:
@@ -54,19 +54,19 @@ export default (apiUrl, httpClient = fetchJson) => {
                 break;
             case GET_MANY: {
                 const listId = params.ids.map(id => {
-                    return {'id': id};
+                    return { 'id': id };
                 });
                 const query = {
-                    'where': {'or': listId}
+                    'where': { 'or': listId }
                 };
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url = `${apiUrl}/${resource}?${queryParameters({ filter: JSON.stringify(query) })}`;
                 break;
             }
             case GET_MANY_REFERENCE: {
-                const {page, perPage} = params.pagination;
-                const {field, order} = params.sort;
+                const { page, perPage } = params.pagination;
+                const { field, order } = params.sort;
                 const query = {};
-                query['where'] = {...params.filter};
+                query['where'] = { ...params.filter };
                 query['where'][params.target] = params.id;
                 if (field) query['order'] = [field + ' ' + order];
                 if (perPage > 0) {
@@ -75,7 +75,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                         query['skip'] = (page - 1) * perPage;
                     }
                 }
-                url = `${apiUrl}/${resource}?${queryParameters({filter: JSON.stringify(query)})}`;
+                url = `${apiUrl}/${resource}?${queryParameters({ filter: JSON.stringify(query) })}`;
                 break;
             }
             case UPDATE:
@@ -95,7 +95,7 @@ export default (apiUrl, httpClient = fetchJson) => {
             default:
                 throw new Error(`Unsupported fetch action type ${type}`);
         }
-        return {url, options};
+        return { url, options };
     };
 
     /**
@@ -106,7 +106,7 @@ export default (apiUrl, httpClient = fetchJson) => {
      * @returns {Object} REST response
      */
     const convertHTTPResponseToREST = (response, type, resource, params) => {
-        const {headers, json} = response;
+        const { headers, json } = response;
         switch (type) {
             case GET_LIST:
             case GET_MANY_REFERENCE:
@@ -114,13 +114,13 @@ export default (apiUrl, httpClient = fetchJson) => {
                     throw new Error('The X-Total-Count header is missing in the HTTP Response. The jsonServer REST client expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?');
                 }
                 return {
-                    data: json,
+                    data: json.data,
                     total: parseInt(headers.get('x-total-count').split('/').pop(), 10),
                 };
             case CREATE:
-                return { data: { ...params.data, id: json.id } };
+                return { data: { ...params.data, id: json.data.id } };
             default:
-                return { data: json };
+                return { data: json.data };
         }
     };
 
@@ -131,7 +131,7 @@ export default (apiUrl, httpClient = fetchJson) => {
      * @returns {Promise} the Promise for a REST response
      */
     return (type, resource, params) => {
-        const {url, options} = convertRESTRequestToHTTP(type, resource, params);
+        const { url, options } = convertRESTRequestToHTTP(type, resource, params);
         return httpClient(url, options)
             .then(response => convertHTTPResponseToREST(response, type, resource, params));
     };
