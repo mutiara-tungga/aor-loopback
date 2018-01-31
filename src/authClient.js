@@ -16,8 +16,11 @@ export const authClient = (loginApiUrl, noAccessPage = '/login') => {
                     }
                     return response.json();
                 })
-                .then(({ ttl, ...data }) => {
-                    storage.save('lbtoken', data, ttl);
+                .then((response) => {
+                    if (!response.status) {
+                        throw new Error(response.message);
+                    }
+                    storage.save('lbtoken', response.data, response.data.ttl);
                 });
         }
         if (type === 'AUTH_LOGOUT') {
@@ -34,8 +37,17 @@ export const authClient = (loginApiUrl, noAccessPage = '/login') => {
         }
         if (type === 'AUTH_CHECK') {
             const token = storage.load('lbtoken');
-            if (token && token.id) {
+            if (token && token.accessToken) {
                 return Promise.resolve();
+            } else {
+                storage.remove('lbtoken');
+                return Promise.reject({ redirectTo: noAccessPage });
+            }
+        }
+        if (type === 'AUTH_GET_PERMISSIONS') {
+            const token = storage.load('lbtoken');
+            if (token && token.accessToken) {
+                return Promise.resolve(token.role);
             } else {
                 storage.remove('lbtoken');
                 return Promise.reject({ redirectTo: noAccessPage });
