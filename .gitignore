@@ -25,4 +25,3 @@ typings/
 .yarn-integrity
 .env
 .idea/
-lib
