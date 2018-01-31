@@ -3,8 +3,8 @@ import storage from './storage';
 
 export const fetchJson = (url, options = {}) => {
     const requestHeaders = options.headers || new Headers({
-            Accept: 'application/json',
-        });
+        Accept: 'application/json',
+    });
     if (!(options && options.body && options.body instanceof FormData)) {
         requestHeaders.set('Content-Type', 'application/json');
     }
@@ -12,7 +12,7 @@ export const fetchJson = (url, options = {}) => {
         requestHeaders.set('Authorization', options.user.token);
     } else {
         let token = storage.load('lbtoken');
-        token = (token && token.id) || '';
+        token = (token && token.accessToken) || '';
         if (url.indexOf('?') >= 0) {
             url = url + '&access_token=' + token;
         } else {
@@ -42,5 +42,5 @@ export const fetchJson = (url, options = {}) => {
 };
 
 export const queryParameters = data => Object.keys(data)
-    .map(key => [ key, data[ key ] ].map(encodeURIComponent).join('='))
+    .map(key => [key, data[key]].map(encodeURIComponent).join('='))
     .join('&');
