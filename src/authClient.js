@@ -47,7 +47,7 @@ export const authClient = (loginApiUrl, noAccessPage = '/login') => {
         if (type === 'AUTH_GET_PERMISSIONS') {
             const token = storage.load('lbtoken');
             if (token && token.token) {
-                return Promise.resolve(token.role);
+                return Promise.resolve(token.roles);
             } else {
                 storage.remove('lbtoken');
                 return Promise.reject({ redirectTo: noAccessPage });
